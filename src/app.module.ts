@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import {  validationSchema } from './config/validation'
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TenantMiddleware } from './common/middleware/tenant.middleware';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -21,10 +24,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         password: config.get('database.password'),
         database: config.get('database.name'),
         synchronize: false,
+        autoLoadEntities: true,
       }),
-    })
+    }),
+    UsersModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(TenantMiddleware)
+       .forRoutes({
+        path: 'auth/signup',
+        method: RequestMethod.POST,
+      });
+  }
+}

@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { TeamsModule } from './modules/teams/teams.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { AuthModule } from './modules/auth/auth.module';
       }),
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    TeamsModule
   ],
   controllers: [],
   providers: [],

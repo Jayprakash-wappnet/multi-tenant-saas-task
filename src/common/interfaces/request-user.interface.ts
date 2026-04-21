@@ -1,6 +1,8 @@
+import { Role } from '../enums/role.enum';
+
 export interface RequestUser {
-  userId: number;
+  userId: string;
   email: string;
   tenantId: string;
-  role: string;
+  role: Role;
 }

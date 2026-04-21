@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { TenantService } from '../../common/tenant/tenant.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt'
+import { Role } from 'src/common/enums/role.enum';
 @Injectable()
 export class UsersService {
   constructor(
@@ -35,8 +36,15 @@ export class UsersService {
     return this.userRepo.save(user);
   }
 
-  async findAll() {
+  async findAll(requestUser) {
     const tenantId = this.tenantService.getTenantId();
+
+    if(requestUser?.role === Role.MEMBER) {
+      return this.userRepo.findOne({ where: {
+        id: requestUser.userId,
+        tenantId
+      }})
+    }
 
     return this.userRepo.find({
       where: { tenantId },

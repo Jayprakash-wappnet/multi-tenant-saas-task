@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
@@ -26,7 +26,7 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Get all users for tenant' })
   @ApiResponse({ status: 200, type: [UserResponseDto] })
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Req() req) {
+    return this.usersService.findAll(req.user);
   }
 }

@@ -1,11 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from 'typeorm';
+import { BaseEntity } from 'src/common/entities/base.entity';
+import { Entity, Column, Index } from 'typeorm';
 
 @Entity('users')
 @Index(['email', 'tenantId'], { unique: true }) // same email allowed in different tenants
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class User extends BaseEntity {
   @Column()
   email: string;
 

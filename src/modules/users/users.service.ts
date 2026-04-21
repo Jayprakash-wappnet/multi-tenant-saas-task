@@ -6,6 +6,8 @@ import { TenantService } from '../../common/tenant/tenant.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt'
 import { Role } from 'src/common/enums/role.enum';
+import { ChangePasswordDTO } from './dto/change-password.dto';
+import { RequestUser } from 'src/common/interfaces/request-user.interface';
 @Injectable()
 export class UsersService {
   constructor(
@@ -56,4 +58,18 @@ export class UsersService {
       where: {email: email}
     })
   }
+
+  async changePassword (user: RequestUser, dto: ChangePasswordDTO) {
+    const userExists = await this.findByEmail(user.email)
+
+    if(!userExists){
+      throw new BadRequestException("User not found")
+    }
+
+    userExists.password = await bcrypt.hash(dto.password, 10)
+
+    await this.userRepo.save(userExists)
+
+    return { message: 'Password changed successfully' }
+  }  
 }

@@ -5,20 +5,30 @@ import { SignupDto } from './dto/signup.dto';
 import * as bcrypt from 'bcrypt'
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import * as crypto from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/user.entity';
+import { Repository } from 'typeorm';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UsersService,
         private tenantService: TenantService,
-        private jwtService: JwtService
-    ) {}
+        private jwtService: JwtService,
+
+        @InjectRepository(User)
+        private userRepo: Repository<User>,
+    ) { }
 
     async signup(dto: SignupDto) {
-        const userexist =  await this.userService.findByEmail(dto.email)
-      
+        const userexist = await this.userService.findByEmail(dto.email)
 
-        if(userexist) {
+
+        if (userexist) {
             throw new BadRequestException('User is already exists in this tenant')
         }
 
@@ -31,16 +41,16 @@ export class AuthService {
         })
     }
 
-    async login (dto: LoginDto){
+    async login(dto: LoginDto) {
         const user = await this.userService.findByEmail(dto.email)
 
-        if(!user) {
+        if (!user) {
             throw new UnauthorizedException('Invalid Credentials')
         }
 
         const isPasswordValid = await bcrypt.compare(dto.password, user.password)
 
-        if(!isPasswordValid){
+        if (!isPasswordValid) {
             throw new UnauthorizedException('Invalid Credentials')
         }
 
@@ -65,5 +75,42 @@ export class AuthService {
         }
 
 
+    }
+
+    async forgotPassword(dto: ForgotPasswordDto) {
+        const user = await this.userService.findByEmail(dto.email);
+
+        if (!user) {
+            return { message: 'If email exists, reset link sent' };
+        }
+
+        const token = crypto.randomBytes(32).toString('hex');
+
+        user.resetToken = token;
+        user.resetTokenExpiry = new Date(Date.now() + 1000 * 60);
+
+        await this.userRepo.save(user);
+    }
+
+    async resetPassword(dto: ResetPasswordDto) {
+        const user = await this.userRepo.findOne({
+            where: { resetToken: dto.token },
+        });
+
+        if (!user) {
+            throw new BadRequestException('Invalid token');
+        }
+
+        if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+            throw new BadRequestException('Token expired');
+        }
+
+        user.password = await bcrypt.hash(dto.newPassword, 10);
+        user.resetToken = null;
+        user.resetTokenExpiry = null;
+
+        await this.userRepo.save(user);
+
+        return { message: 'Password reset successful' };
     }
 }

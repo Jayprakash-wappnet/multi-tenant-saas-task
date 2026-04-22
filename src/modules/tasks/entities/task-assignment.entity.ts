@@ -5,9 +5,9 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { BaseEntity } from '../../common/entities/base.entity';
+import { BaseEntity } from 'src/common/entities/base.entity';
 import { Task } from './task.entity';
-import { User } from '../users/user.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('task_assignments')
 @Index(['task', 'user'], { unique: true })

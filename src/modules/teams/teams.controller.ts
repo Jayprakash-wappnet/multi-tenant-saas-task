@@ -6,11 +6,12 @@ import {
   Req,
   Get,
   Param,
+  Delete,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { AddMemberDto } from './dto/add-member.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -21,7 +22,7 @@ import { Role } from 'src/common/enums/role.enum';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('teams')
 export class TeamsController {
-  constructor(private teamsService: TeamsService) {}
+  constructor(private teamsService: TeamsService) { }
 
   @Post()
   @Roles(Role.ADMIN)
@@ -37,5 +38,24 @@ export class TeamsController {
   @Get()
   getMyTeams(@Req() req) {
     return this.teamsService.getMyTeams(req.user);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Delete Team' })
+  deleteTeam(
+    @Param('id') id: string,
+    @Req() req
+  ) {
+    return this.teamsService.deleteTeam(id, req.user)
+  }
+
+  @Delete(':teamId/users/:userId')
+  @ApiOperation({ summary: 'Delete user from team' })
+  removeUserFromTeam(
+    @Param('teamId') teamId: string,
+    @Param('userId') userId: string,
+    @Req() req
+  ) {
+    return this.teamsService.removeUserFromTeam(teamId, userId, req.user)
   }
 }

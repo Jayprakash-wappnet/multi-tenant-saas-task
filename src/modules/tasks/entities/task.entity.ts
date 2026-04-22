@@ -1,3 +1,7 @@
+import { TaskPriority } from 'src/common/enums/task-priority.enum';
+import { TaskStatus } from 'src/common/enums/task-status.enum';
+import { Team } from 'src/modules/teams/entities/team.entity';
+import { BaseEntity } from 'src/common/entities/base.entity';
 import {
   Entity,
   Column,
@@ -5,10 +9,6 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { BaseEntity } from '../../common/entities/base.entity';
-import { TaskStatus } from '../../common/enums/task-status.enum';
-import { TaskPriority } from '../../common/enums/task-priority.enum';
-import { Team } from '../teams/team.entity';
 
 @Entity('tasks')
 @Index(['tenantId'])

@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { User } from '../../modules/users/user.entity';
+import { User } from '../../modules/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 export async function seedUsers(dataSource: DataSource) {

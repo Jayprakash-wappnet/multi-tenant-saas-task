@@ -2,7 +2,7 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { Entity, Column, Index } from 'typeorm';
 
 @Entity('users')
-@Index(['email', 'tenantId'], { unique: true }) // same email allowed in different tenants
+@Index(['email', 'tenantId'], { unique: true })
 export class User extends BaseEntity {
   @Column()
   email: string;

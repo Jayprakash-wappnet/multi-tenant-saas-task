@@ -1,14 +1,13 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
   JoinColumn,
   Index,
 } from 'typeorm';
-import { Team } from './team.entity';
-import { User } from '../users/user.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
+import { Team } from './team.entity';
+import { User } from 'src/modules/users/entities/user.entity';
 
 @Entity('team_members')
 @Index(['team', 'user'], { unique: true }) 
